@@ -1,9 +1,12 @@
 import mongoose from "mongoose";
-import dotenv from "dotenv";
+import { getEnvVar } from "../utils/getEnvVar.js";
 
-dotenv.config();
+const user = getEnvVar('MONGODB_USER');
+const pswd = getEnvVar('MONGODB_PASSWORD');
+const url = getEnvVar('MONGODB_URL');
+const db = getEnvVar('MONGODB_DB');
 
-const DB_URI = `mongodb+srv://${process.env.MONGODB_USER}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB_URL}/${process.env.MONGODB_DB}?retryWrites=true&w=majority`;
+const DB_URI = `mongodb+srv://${user}:${pswd}@${url}/${db}?retryWrites=true&w=majority`;
 
 export async function initMongoConnection() {
     try{
