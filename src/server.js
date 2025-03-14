@@ -14,6 +14,11 @@ export function setupServer() {
     app.use(express.json());
     app.use(cors());
     app.use(pino());
+    
+    app.get('/', (req, res) => {
+        res.send('Welcome to the API!');
+    });
+
 
     app.use('/contacts', contactRoutes);
 
