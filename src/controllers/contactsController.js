@@ -13,12 +13,15 @@ export async function getContacts(req, res) {
 
 export async function getContactsById(req, res){
     const { contactId } = req.params;
+        if (!mongoose.Types.ObjectId.isValid(contactId)){
+            throw createHttpError(400, 'Invalid contact id format');
+        }        
         const contact = await fetchContactById(contactId);
+
         if (!contact){
-            return res.status(404).json({
-                message: 'Contact not found',
-            })
+            createHttpError(404, 'Contact not found');
         }
+        
         res.status(200).json({
             status: 200,
             message: `Successfully found contact with id ${contactId}!`,
@@ -29,7 +32,7 @@ export async function getContactsById(req, res){
 export async function createContactController(req,res){
     const contact = await createContact(req.body);
     res.status(201).json({ status: 201, message: "Successfully created a contact!", data: contact});
-}
+}   
 
 export async function removeContactController(req, res){
     const { contactId } = req.params;
