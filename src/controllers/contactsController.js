@@ -1,9 +1,21 @@
 import mongoose from "mongoose";
 import { createContact, fetchAllContacts, fetchContactById, removeContact, updateContact } from "../services/contacts.js";
 import createHttpError from "http-errors";
+import { parsePaginationParams } from "../utils/parsePaginationParams.js";
+import { parseSortParams } from "../utils/parseSortParams.js";
 
 export async function getContacts(req, res) {
-    const contacts = await fetchAllContacts();
+
+    const {page , perPage} = parsePaginationParams(req.query);
+    const {sortBy, sortOrder} = parseSortParams(req.query);
+
+ 
+    const contacts = await fetchAllContacts({
+        page,
+        perPage,
+        sortBy,
+        sortOrder,
+    });
     res.status(200).json({
         status: 200,
         message: 'Successfully found contacts!',
