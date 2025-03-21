@@ -24,10 +24,7 @@ export async function getContacts(req, res) {
 }
 
 export async function getContactsById(req, res){
-    const { contactId } = req.params;
-        if (!mongoose.Types.ObjectId.isValid(contactId)){
-            throw createHttpError(400, 'Invalid contact id format');
-        }        
+    const { contactId } = req.params;    
         const contact = await fetchContactById(contactId);
 
         if (!contact){
