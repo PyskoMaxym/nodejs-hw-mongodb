@@ -3,7 +3,7 @@ import Contact from "../models/contact.js";
 export async function fetchAllContacts({ page, perPage, sortBy, sortOrder }) {
     const skip = page > 0 ? ((page - 1) * perPage) : 0;
 
-    const [totalItems, contacts] = await Promise.all([
+    const [totalItems, data] = await Promise.all([
         Contact.countDocuments(),
         Contact.find().sort({[sortBy]: sortOrder}).skip(skip).limit(perPage),
     ])
@@ -11,7 +11,7 @@ export async function fetchAllContacts({ page, perPage, sortBy, sortOrder }) {
     const totalPages = Math.ceil(totalItems / perPage);
 
     return{
-        contacts,
+        data,
         totalItems,
         page,
         perPage,
