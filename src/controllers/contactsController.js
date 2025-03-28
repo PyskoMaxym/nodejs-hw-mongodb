@@ -59,6 +59,11 @@ export async function removeContactController(req, res){
     if(!contact){
         throw createHttpError(404, 'Contact not found');
     }
+
+    if(contact.userId.toString() !== req.user.id.toString()){
+        throw createHttpError.Forbidden("Contact is not allowed");
+    }
+
     res.status(204).send();
 }
 
@@ -69,6 +74,11 @@ export async function updateContactController(req, res){
     if(!contact){
         throw createHttpError(404, 'Contact not found');
     }
+
+    if(contact.userId.toString() !== req.user.id.toString()){
+        throw createHttpError.Forbidden("Contact is not allowed");
+    }
+
     res.json({
         status: 200,
         message: 'Successfully patched a contact!',
