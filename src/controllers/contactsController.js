@@ -27,13 +27,9 @@ export async function getContacts(req, res) {
 export async function getContactsById(req, res){
     const { contactId } = req.params;    
         const contact = await fetchContactById(contactId);
-
-        if (!contact){
-            createHttpError(404, 'Contact not found');
-        }
         
-        if(contact.userId.toString() !== req.user.id.toString()){
-            throw createHttpError.Forbidden("Contact is not allowed");
+        if(!contact || contact.userId.toString() !== req.user.id.toString()){
+            throw createHttpError.NotFound("Contact is not allowed");
         }
 
         res.status(200).json({
@@ -56,11 +52,7 @@ export async function removeContactController(req, res){
     const { contactId } = req.params;
     const contact = await removeContact(contactId);
 
-    if(!contact){
-        throw createHttpError(404, 'Contact not found');
-    }
-
-    if(contact.userId.toString() !== req.user.id.toString()){
+    if(!contact || contact.userId.toString() !== req.user.id.toString()){
         throw createHttpError.Forbidden("Contact is not allowed");
     }
 
@@ -71,11 +63,7 @@ export async function updateContactController(req, res){
     const { contactId } = req.params;
     const contact = await updateContact(contactId, req.body);
 
-    if(!contact){
-        throw createHttpError(404, 'Contact not found');
-    }
-
-    if(contact.userId.toString() !== req.user.id.toString()){
+    if(!contact || contact.userId.toString() !== req.user.id.toString()){
         throw createHttpError.Forbidden("Contact is not allowed");
     }
 
