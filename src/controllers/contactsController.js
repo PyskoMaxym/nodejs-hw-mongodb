@@ -48,12 +48,13 @@ export async function createContactController(req,res){
     res.status(201).json({ status: 201, message: "Successfully created a contact!", data: contact});
 }   
 
+
 export async function removeContactController(req, res){
     const { contactId } = req.params;
-    const contact = await fetchContactById(contactId);
+    const contact = await fetchContactById(contactId, req.user.id);
 
-    if(!contact || contact.userId.toString() !== req.user.id.toString()){
-        throw createHttpError.Forbidden("Contact is not allowed");
+    if(!contact || contact.userId.toString() !== req.user.id.toString() ){
+        throw createHttpError.NotFound("Contact is not allowed");
     }
     await removeContact(contactId);
     res.status(204).send();
@@ -61,16 +62,16 @@ export async function removeContactController(req, res){
 
 export async function updateContactController(req, res){
     const { contactId } = req.params;
-    const contact = await fetchContactById(contactId);
+    const contact = await fetchContactById(contactId, req.user.id);
 
     if(!contact || contact.userId.toString() !== req.user.id.toString()){
-        throw createHttpError.Forbidden("Contact is not allowed");
+        throw createHttpError.NotFound("Contact is not allowed");
     }
-    const updateContact = await updateContact(contactId, req.body);
+    const updatedContact = await updateContact(contactId, req.body);
 
     res.json({
         status: 200,
         message: 'Successfully patched a contact!',
-        data: contact,
+        data: updatedContact,
       });
 }
