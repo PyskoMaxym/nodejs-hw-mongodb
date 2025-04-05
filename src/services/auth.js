@@ -4,6 +4,7 @@ import createHttpError from "http-errors";
 import bcrypt from "bcrypt";
 import crypto from "node:crypto";
 import { FIFTEEN_MINUTES, ONE_DAY } from "../constants/index.js";
+import { sendEmail } from "../utils/sendEmail.js";
 
 export async function registerUser(payload){
     const user = await User.findOne({ email: payload.email});
@@ -63,4 +64,14 @@ export async function refreshSession(sessionId, refreshToken){
             accessTokenValidUntil: new Date( Date.now() + FIFTEEN_MINUTES),
             refreshTokenValidUntil: new Date( Date.now() + ONE_DAY),
         })
+}
+
+export async function requestPasswordReset(email){
+    const user = await User.findOne({email});
+
+    if(user === null){
+        throw createHttpError.NotFound("User not found");
+    }
+
+    await sendEmail(email, "Reset your password", "<h1>Reset your password</h1>");
 }

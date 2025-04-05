@@ -30,14 +30,22 @@ export async function createContact(payload){
     return contact;
 }
 
-export async function removeContact(contactId){
-    const deleteContact = await Contact.findByIdAndDelete(contactId);
-    return deleteContact;
+export async function removeContact(contactId, userId){
+    const deleteContact = await Contact.findOne({_id:contactId, userId});
+    if(!deleteContact){
+        throw createHttpError.NotFound("Contact is not allowed");
+    }
+    await Contact.findByIdAndDelete(contactId);
 }
 
-export async function updateContact(contactId, payload) {
-    const contact = await Contact.findByIdAndUpdate(contactId, payload,{
+export async function updateContact(contactId, payload, userId) {
+    const contact = await Contact.findOneAndUpdate({_id: contactId, userId}, payload,{
         new: true,
     });
+
+    if (!contact) {
+        throw createHttpError.NotFound("Contact is not allowed");
+      }
+
     return contact;
 }

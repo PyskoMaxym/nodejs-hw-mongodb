@@ -51,23 +51,13 @@ export async function createContactController(req,res){
 
 export async function removeContactController(req, res){
     const { contactId } = req.params;
-    const contact = await fetchContactById(contactId, req.user.id);
-
-    if(!contact || contact.userId.toString() !== req.user.id.toString() ){
-        throw createHttpError.NotFound("Contact is not allowed");
-    }
-    await removeContact(contactId);
+    await removeContact(contactId, req.user.id );
     res.status(204).send();
 }
 
 export async function updateContactController(req, res){
     const { contactId } = req.params;
-    const contact = await fetchContactById(contactId, req.user.id);
-
-    if(!contact || contact.userId.toString() !== req.user.id.toString()){
-        throw createHttpError.NotFound("Contact is not allowed");
-    }
-    const updatedContact = await updateContact(contactId, req.body);
+    const updatedContact = await updateContact(contactId,req.user.id, req.body);
 
     res.json({
         status: 200,
