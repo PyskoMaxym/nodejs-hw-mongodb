@@ -63,7 +63,7 @@ export async function removeContactController(req, res){
 
 export async function updateContactController(req, res){
     const { contactId } = req.params;
-    const updatedContact = await updateContact(contactId,req.user.id, req.body);
+    const updatedContact = await updateContact(contactId, req.body, req.user.id);
 
     if (!updatedContact) {
         throw createHttpError.NotFound('Contact is not allowed');
