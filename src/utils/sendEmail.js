@@ -12,7 +12,7 @@
 
  export function sendEmail( to, subject, content ){
     return  transporter.sendMail({
-        from: "",
+        from: getEnvVar("SMTP_FROM"),
         to,
         subject,
         html: content 

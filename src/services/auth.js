@@ -2,9 +2,19 @@ import User from "../models/user.js";
 import Session from "../models/session.js";
 import createHttpError from "http-errors";
 import bcrypt from "bcrypt";
+import * as fs from "node:fs";
+import path from "node:path"; 
+import handlebars from "handlebars";
 import crypto from "node:crypto";
+import jwt from "jsonwebtoken";
 import { FIFTEEN_MINUTES, ONE_DAY } from "../constants/index.js";
 import { sendEmail } from "../utils/sendEmail.js";
+import { getEnvVar } from "../utils/getEnvVar.js";
+
+const RESET_PASSWORD_TEMPLATE = fs.readFileSync(path.resolve("src/templates/reset-password.hbs"),
+{encoding: "utf-8"},
+);
+
 
 export async function registerUser(payload){
     const user = await User.findOne({ email: payload.email});
@@ -73,5 +83,33 @@ export async function requestPasswordReset(email){
         throw createHttpError.NotFound("User not found");
     }
 
-    await sendEmail(email, "Reset your password", "<h1>Reset your password</h1>");
+    const resetToken = jwt.sign({ sub: user._id, name: user.name}, getEnvVar("JWT_SECRET"), {expiresIn: "15m"});
+
+    const template = handlebars.compile(RESET_PASSWORD_TEMPLATE);
+
+    await sendEmail(email, "Reset your password", template({resetToken}));
+}
+
+export async function resetPassword(token, newPassword){
+    try{
+        const decoded = jwt.verify(token, getEnvVar("JWT_SECRET"));
+        
+        const user = await User.findById(decoded.sub);
+
+        if(user === null){
+            throw createHttpError.NotFound("User not found");
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        
+        await User.findByIdAndUpdate(user._id, {password: hashedPassword});     
+
+    }catch(error){
+
+        if(error.name === "JsonWebTokenError" || error.name === "TokenExpiredError" ){
+            throw createHttpError.Unauthorized("Token is expired or invalid.");
+        }
+
+        throw error;
+    }
 }
