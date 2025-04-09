@@ -1,9 +1,12 @@
 import mongoose from "mongoose";
+import path from "node:path";
+import * as fs from "node:fs/promises";
 import { createContact, fetchAllContacts, fetchContactById, removeContact, updateContact } from "../services/contacts.js";
 import createHttpError from "http-errors";
 import { parsePaginationParams } from "../utils/parsePaginationParams.js";
 import { parseSortParams } from "../utils/parseSortParams.js";
-
+import { getEnvVar } from "../utils/getEnvVar.js";
+import { uploadToCloudinary } from "../utils/uploadToCloudinary.js";
 export async function getContacts(req, res) {
 
     const {page , perPage} = parsePaginationParams(req.query);
@@ -40,9 +43,20 @@ export async function getContactsById(req, res){
 }
 
 export async function createContactController(req,res){
+    let photo = null;
+    if(getEnvVar("UPLOAD_TO_CLOUDINARY") === "true"){
+        const result = await uploadToCloudinary(req.file.path);
+        photo = result.secure_url;
+    } else{
+        await fs.rename(req.file.path, path.resolve("src", "uploads", req.file.filename));
+
+        photo = `http://localhost:3002/uploads/${req.file.filename}`;
+    }
+
     const userContact = {
         ...req.body,
         userId: req.user.id, 
+        photo, 
     }
     const contact = await createContact(userContact);
     res.status(201).json({ status: 201, message: "Successfully created a contact!", data: contact});

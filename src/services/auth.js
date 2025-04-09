@@ -83,11 +83,14 @@ export async function requestPasswordReset(email){
         throw createHttpError.NotFound("User not found");
     }
 
-    const resetToken = jwt.sign({ sub: user._id, name: user.name}, getEnvVar("JWT_SECRET"), {expiresIn: "15m"});
+    const resetToken = jwt.sign({ sub: user._id, name: user.name}, getEnvVar("JWT_SECRET"), {expiresIn: "5m"});
 
     const template = handlebars.compile(RESET_PASSWORD_TEMPLATE);
-
-    await sendEmail(email, "Reset your password", template({resetToken}));
+    try{
+        await sendEmail(email, "Reset your password", template({resetToken}));
+    } catch(error){
+        throw createHttpError.InternalServerError("Failed to send the email, please try again later.");
+    }
 }
 
 export async function resetPassword(token, newPassword){

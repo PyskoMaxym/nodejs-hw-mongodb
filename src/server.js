@@ -8,12 +8,14 @@ import { notFoundHandler } from "./middlewares/notFoundHandler.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 import  authRoutes  from "./routes/auth.js";
 import { auth } from "./middlewares/auth.js";
+import path from "node:path";
 
 export function setupServer() {
 
     const app = express();
     const PORT =  getEnvVar('PORT', '3002');
 
+    app.use("/uploads", express.static(path.resolve("src", "uploads")));
     app.use(express.json());
     app.use(cors());
     app.use(pino({ level: "warn" }));
