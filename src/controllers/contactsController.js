@@ -44,19 +44,21 @@ export async function getContactsById(req, res){
 
 export async function createContactController(req,res){
     let photo = null;
-    if(getEnvVar("UPLOAD_TO_CLOUDINARY") === "true"){
-        const result = await uploadToCloudinary(req.file.path);
-        photo = result.secure_url;
-    } else{
-        await fs.rename(req.file.path, path.resolve("src", "uploads", req.file.filename));
-
-        photo = `http://localhost:3002/uploads/${req.file.filename}`;
+    if(req.file){    
+        if(getEnvVar("UPLOAD_TO_CLOUDINARY") === "true"){
+            const result = await uploadToCloudinary(req.file.path);
+            photo = result.secure_url;
+        } else{
+            await fs.rename(req.file.path, path.resolve("src", "uploads", req.file.filename));
+            
+            photo = `http://localhost:3002/uploads/${req.file.filename}`;
+        }
     }
 
     const userContact = {
         ...req.body,
         userId: req.user.id, 
-        photo, 
+        ...(photo && { photo }), 
     }
     const contact = await createContact(userContact);
     res.status(201).json({ status: 201, message: "Successfully created a contact!", data: contact});
@@ -77,7 +79,23 @@ export async function removeContactController(req, res){
 
 export async function updateContactController(req, res){
     const { contactId } = req.params;
-    const updatedContact = await updateContact(contactId, req.body, req.user.id);
+    let photo = null;
+    
+    if (req.file) {
+        if (getEnvVar("UPLOAD_TO_CLOUDINARY") === "true") {
+            const result = await uploadToCloudinary(req.file.path);
+            photo = result.secure_url;
+        } else {
+            await fs.rename(req.file.path, path.resolve("src", "uploads", req.file.filename));
+            photo = `http://localhost:3002/uploads/${req.file.filename}`;
+        }
+    }
+    const updatedData={
+        ...req.body,
+        ...(photo && { photo }),
+    }
+
+    const updatedContact = await updateContact(contactId, updatedData, req.user.id);
 
     if (!updatedContact) {
         throw createHttpError.NotFound('Contact is not allowed');
