@@ -1,0 +1,42 @@
+type: object
+required:
+  - name
+  - phoneNumber
+  - contactType
+  - userId
+  - createdAt
+  - updatedAt
+properties:
+  name:
+    type: string
+    description: contact name
+    example: Maxym Pysko
+  phoneNumber:
+    type: string
+    description: contact phoneNumber
+    example: 380681478956
+  contactType: 
+    type: string
+    description: Contact type
+    enum: ['work', 'home', 'personal']
+    example: work
+  userId:
+    type: string
+    description: User id
+    example: 67f8e07105bb20b9a2dfad89
+  photo: 
+    type: string
+    description: Contact photo url
+    example: https://res.cloudinary.com/dcjml5xhp/image/upload/v1744281729/uogs9ejzzgycimzinf6k.jpg 
+    default: null
+  createdAt:
+    type: string
+    format: date-time
+    description: contact created date
+    example: 2025-04-10T10:41:37.837+00:00
+  updatedAt:
+    type: string
+    format: date-time
+    description: contact updated date
+    example: 2025-04-10T10:41:37.837+00:00
+    
