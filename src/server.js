@@ -10,7 +10,6 @@ import  authRoutes  from "./routes/auth.js";
 import { auth } from "./middlewares/auth.js";
 import path from "node:path";
 import * as fs from "node:fs"
-import swaggerUiExpress from "swagger-ui-express";
 import { swaggerDocs } from "./middlewares/swaggerDocs.js";
 
 export function setupServer() {
