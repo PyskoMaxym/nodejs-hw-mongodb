@@ -11,17 +11,17 @@ import { auth } from "./middlewares/auth.js";
 import path from "node:path";
 import * as fs from "node:fs"
 import swaggerUiExpress from "swagger-ui-express";
+import { swaggerDocs } from "./middlewares/swaggerDocs.js";
 
 export function setupServer() {
-
-    const swaggerDocument = JSON.parse(fs.readFileSync(path.resolve("docs", "swagger.json"), "utf-8"));
 
     const app = express();
     const PORT =  getEnvVar('PORT', '3002');
 
-    app.use('/api-docs', swaggerUiExpress.serve, swaggerUiExpress.setup(swaggerDocument));
+    
 
     app.use("/uploads", express.static(path.resolve("src", "uploads")));
+    app.use('/api-docs', swaggerDocs());
     app.use(express.json());
     app.use(cors());
     app.use(pino({ level: "warn" }));
