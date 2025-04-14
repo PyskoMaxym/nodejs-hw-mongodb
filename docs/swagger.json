@@ -11,6 +11,9 @@
   },
   "servers": [
     {
+      "url": "https://nodejs-hw-mongodb-uh77.onrender.com"
+    },
+    {
       "url": "http://127.0.0.1:3002"
     }
   ],

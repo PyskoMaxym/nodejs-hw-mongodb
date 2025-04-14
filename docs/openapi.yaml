@@ -8,6 +8,7 @@ info:
   description: This is documentation of my homework
 
 servers:
+    - url: https://nodejs-hw-mongodb-uh77.onrender.com
     - url: http://127.0.0.1:3002
 paths: 
     /contacts/{id}:
