@@ -12,7 +12,6 @@ export async function getContacts(req, res) {
 
 export async function getContactsById(req, res){
     const { contactId } = req.params;
-    try{
         const contact = await fetchContactById(contactId);
         if (!contact){
             return res.status(404).json({
@@ -24,11 +23,4 @@ export async function getContactsById(req, res){
             message: `Successfully found contact with id ${contactId}!`,
             data: contact,
         });
-    } catch(error){
-        res.status(500).json({
-            status: 500,
-            message: 'Internal Server Error',
-            data: error.message,
-        });
-    }
 }
